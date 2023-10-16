@@ -1,0 +1,142 @@
+{
+  "name": "high_cpu_usage_on_azure_windows_vm",
+  "description": "This incident type refers to a situation where a Windows Virtual Machine (VM) running on Microsoft Azure cloud platform is utilizing an abnormally high amount of CPU resources. This can cause performance issues and impact the overall functionality of the VM. The cause of high CPU usage can be due to various factors such as running resource-intensive applications, misconfigured VM settings, or insufficient resources allocated to the VM. Resolving this incident requires identifying the root cause and taking appropriate actions such as optimizing the VM settings, adjusting resource allocation, or optimizing the application code.",
+  "params": [
+    {
+      "name": "VM_NAME",
+      "value": ""
+    },
+    {
+      "name": "CPU_THRESHOLD",
+      "value": ""
+    },
+    {
+      "name": "RESOURCE_GROUP_NAME",
+      "value": ""
+    },
+    {
+      "name": "SUBSCRIPTION_ID",
+      "value": ""
+    },
+    {
+      "name": "NEW_PRIORITY_CLASS",
+      "value": ""
+    },
+    {
+      "name": "HOST_NAME",
+      "value": ""
+    },
+    {
+      "name": "K8S_CLUSTER_NAME",
+      "value": ""
+    },
+    {
+      "name": "NAMESPACE",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## High CPU Usage on Azure Windows VM\nThis incident type refers to a situation where a Windows Virtual Machine (VM) running on Microsoft Azure cloud platform is utilizing an abnormally high amount of CPU resources. This can cause performance issues and impact the overall functionality of the VM. The cause of high CPU usage can be due to various factors such as running resource-intensive applications, misconfigured VM settings, or insufficient resources allocated to the VM. Resolving this incident requires identifying the root cause and taking appropriate actions such as optimizing the VM settings, adjusting resource allocation, or optimizing the application code."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Look at the processes using the most CPU"
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_cpu_usage_verification()"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Verify if the VM is undersized or oversized for the workload"
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_cpu_info()"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check if any resource-intensive application is running on the VM"
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `Get-Process | Select-Object -Property Name, CPU, Responding`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check if any scheduled tasks or scripts are running on the VM"
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_get_scheduled_task_log()"
+    },
+    {
+      "name": "cell_10",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Verify if the VM is running with the latest version of the Azure VM agent"
+    },
+    {
+      "name": "cell_11",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `(Get-ItemProperty 'HKLM:\\SOFTWARE\\Microsoft\\Windows Azure Guest Agent').Version`"
+    },
+    {
+      "name": "cell_12",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Use azure cli to resize the VM and give it more resources"
+    },
+    {
+      "name": "cell_13",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_vm_resizer()"
+    },
+    {
+      "name": "cell_14",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Lower the priority class of processes which are using high cpu using powershell commands"
+    },
+    {
+      "name": "cell_15",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_lower_cpu_priority($CPU_THRESHOLD, $NEW_PRIORITY_CLASS)"
+    },
+    {
+      "name": "cell_16",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Use powershell to kill a specific process which is using high cpu"
+    },
+    {
+      "name": "cell_17",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_process_cpu_threshold($CPU_THRESHOLD)"
+    }
+  ]
+}

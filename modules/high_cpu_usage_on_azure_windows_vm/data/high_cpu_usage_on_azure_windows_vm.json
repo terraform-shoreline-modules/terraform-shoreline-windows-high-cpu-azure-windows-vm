@@ -3,15 +3,7 @@
   "description": "This incident type refers to a situation where a Windows Virtual Machine (VM) running on Microsoft Azure cloud platform is utilizing an abnormally high amount of CPU resources. This can cause performance issues and impact the overall functionality of the VM. The cause of high CPU usage can be due to various factors such as running resource-intensive applications, misconfigured VM settings, or insufficient resources allocated to the VM. Resolving this incident requires identifying the root cause and taking appropriate actions such as optimizing the VM settings, adjusting resource allocation, or optimizing the application code.",
   "params": [
     {
-      "name": "VM_NAME",
-      "value": ""
-    },
-    {
       "name": "CPU_THRESHOLD",
-      "value": ""
-    },
-    {
-      "name": "RESOURCE_GROUP_NAME",
       "value": ""
     },
     {
@@ -20,6 +12,14 @@
     },
     {
       "name": "NEW_PRIORITY_CLASS",
+      "value": ""
+    },
+    {
+      "name": "VM_NAME",
+      "value": ""
+    },
+    {
+      "name": "RESOURCE_GROUP_NAME",
       "value": ""
     },
     {
@@ -52,7 +52,7 @@
       "name": "cell_3",
       "type": "OP_LANG",
       "enabled": true,
-      "content": "host | host_name=$HOST_NAME | invoke_cpu_usage_verification()"
+      "content": "host | host_name=$HOST_NAME | invoke_proc_cpu_usage()"
     },
     {
       "name": "cell_4",
@@ -64,7 +64,7 @@
       "name": "cell_5",
       "type": "OP_LANG",
       "enabled": true,
-      "content": "host | host_name=$HOST_NAME | invoke_cpu_info()"
+      "content": "host | host_name=$HOST_NAME | invoke_get_hw_info()"
     },
     {
       "name": "cell_6",
@@ -88,7 +88,7 @@
       "name": "cell_9",
       "type": "OP_LANG",
       "enabled": true,
-      "content": "host | host_name=$HOST_NAME | invoke_get_scheduled_task_log()"
+      "content": "host | host_name=$HOST_NAME | invoke_get_scheduledtask()"
     },
     {
       "name": "cell_10",
@@ -112,7 +112,7 @@
       "name": "cell_13",
       "type": "OP_LANG",
       "enabled": true,
-      "content": "host | host_name=$HOST_NAME | invoke_vm_resizer()"
+      "content": "host | host_name=$HOST_NAME | invoke_vm_size_upgrade()"
     },
     {
       "name": "cell_14",
@@ -136,7 +136,7 @@
       "name": "cell_17",
       "type": "OP_LANG",
       "enabled": true,
-      "content": "host | host_name=$HOST_NAME | invoke_process_cpu_threshold($CPU_THRESHOLD)"
+      "content": "host | host_name=$HOST_NAME | invoke_cpu_process_threshold($CPU_THRESHOLD)"
     }
   ]
 }
